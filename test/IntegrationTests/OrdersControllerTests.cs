@@ -3,6 +3,7 @@
 using FluentAssertions;
 
 using WebApi;
+using WebApi.Configuration;
 
 namespace IntegrationTests;
 

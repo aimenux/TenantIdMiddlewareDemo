@@ -1,6 +1,6 @@
 ﻿namespace WebApi.Models;
 
-public record Order
+public sealed record Order
 {
     public string OrderId { get; init; }
     public string TenantId { get; init; }

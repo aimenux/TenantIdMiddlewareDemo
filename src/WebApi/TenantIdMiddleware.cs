@@ -1,18 +1,30 @@
-﻿namespace WebApi;
+﻿using Microsoft.Extensions.Options;
+
+using WebApi.Configuration;
+
+namespace WebApi;
 
 public class TenantIdMiddleware
 {
     private readonly RequestDelegate _next;
-    private readonly ILogger<TenantIdMiddleware> _logger;
+    private readonly IOptions<Settings> _options;
+    private readonly HashSet<string> _excludedPaths;
 
-    public TenantIdMiddleware(RequestDelegate next, ILogger<TenantIdMiddleware> logger)
+    public TenantIdMiddleware(RequestDelegate next, IOptions<Settings> options)
     {
         _next = next;
-        _logger = logger;
+        _options = options;
+        _excludedPaths = GetExcludedPaths();
     }
 
     public async Task InvokeAsync(HttpContext context)
     {
+        if (IsExcludedPath(context))
+        {
+            await _next(context);
+            return;
+        }
+        
         if (!IsValidTenantId(context))
         {
             context.Response.StatusCode = 400;
@@ -24,7 +36,7 @@ public class TenantIdMiddleware
         await _next(context);
     }
     
-    private static bool IsValidTenantId(HttpContext context)
+    private bool IsValidTenantId(HttpContext context)
     {
         if (context is null)
         {
@@ -36,8 +48,16 @@ public class TenantIdMiddleware
             return false;
         }
 
-        return tenantId.Single().IsValidTenantId(acceptNumericValues: false);
+        return tenantId.Single().IsValidTenantId(acceptNumericValues: _options.Value.AcceptNumericValues);
     }
+
+    private bool IsExcludedPath(HttpContext context)
+    {
+        var segments = context.Request.Path.Value?.Split("/") ?? Array.Empty<string>();
+        return segments.Any(x => _excludedPaths.Contains(x));
+    }
+
+    private HashSet<string> GetExcludedPaths() => new(_options.Value.ExcludedPaths, StringComparer.OrdinalIgnoreCase);
 }
 
 public static class TenantIdMiddlewareExtensions

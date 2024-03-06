@@ -1,4 +1,5 @@
-﻿using WebApi.Services;
+﻿using WebApi.Configuration;
+using WebApi.Services;
 
 namespace WebApi;
 
@@ -11,10 +12,13 @@ public class Startup
         builder.Services.AddSwaggerGen();
         builder.Services.AddRouting(options => options.LowercaseUrls = true);
         builder.Services.AddScoped<IOrderService, OrderService>();
+        builder.Services.Configure<Settings>(builder.Configuration.GetSection(Settings.SectionName));
     }
 
     public void Configure(WebApplication app)
     {
+        app.UseTenantId();
+        
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -24,7 +28,6 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseAuthorization();
-        app.UseTenantId();
         app.MapControllers();
     }
 }

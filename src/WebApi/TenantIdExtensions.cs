@@ -1,4 +1,6 @@
-﻿namespace WebApi;
+﻿using WebApi.Configuration;
+
+namespace WebApi;
 
 public static class TenantIdExtensions
 {
@@ -11,6 +13,6 @@ public static class TenantIdExtensions
         }
         
         var tenants = new HashSet<string>(Enum.GetNames(typeof(Constants.Tenants)), StringComparer.OrdinalIgnoreCase);
-        return tenants.TryGetValue(tenantId, out var _);
+        return tenants.TryGetValue(tenantId, out _);
     }
 }
