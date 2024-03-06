@@ -17,8 +17,6 @@ public class Startup
 
     public void Configure(WebApplication app)
     {
-        app.UseTenantId();
-        
         if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage();
@@ -28,6 +26,7 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseAuthorization();
+        app.UseTenantId();
         app.MapControllers();
     }
 }
