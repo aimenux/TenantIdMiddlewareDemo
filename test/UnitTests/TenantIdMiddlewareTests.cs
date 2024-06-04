@@ -23,13 +23,14 @@ public class TenantIdMiddlewareTests
     public async Task InvokeAsync_When_TenantId_Is_Valid_Then_Should_Return_Ok_StatusCode(string tenantId)
     {
         // arrange
+        using var body = new MemoryStream();
         var next = BuildRequestDelegate();
         var options = Options.Create(new Settings());
         var context = new DefaultHttpContext
         {
             Response =
             {
-                Body = new MemoryStream(),
+                Body = body,
             },
             Request =
             {
@@ -59,13 +60,14 @@ public class TenantIdMiddlewareTests
     public async Task InvokeAsync_When_TenantId_Is_Not_Valid_Then_Should_Return_BadRequest_StatusCode(string tenantId)
     {
         // arrange
+        using var body = new MemoryStream();
         var next = BuildRequestDelegate();
         var options = Options.Create(new Settings());
         var context = new DefaultHttpContext
         {
             Response =
             {
-                Body = new MemoryStream(),
+                Body = body,
             },
             Request =
             {
@@ -93,6 +95,7 @@ public class TenantIdMiddlewareTests
     public async Task InvokeAsync_When_Path_Is_Excluded_Then_Should_Return_Ok_StatusCode(string path)
     {
         // arrange
+        using var body = new MemoryStream();
         var next = BuildRequestDelegate();
         var options = Options.Create(new Settings
         {
@@ -102,7 +105,7 @@ public class TenantIdMiddlewareTests
         {
             Response =
             {
-                Body = new MemoryStream(),
+                Body = body,
             },
             Request =
             {
